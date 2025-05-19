@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/img/22 kaf patch.png">
+</head>
+<body>
+    <nav class="navbar">
+        <img src="/img/22 kaf patch.png" alt="Logo" class="logo">
+        <div class="container">
+            <h1><a class="navbar-brand" href="/">Облік звільнень особового складу</a></h1>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Реєстрація</h2>
+            </div>
+            <div class="card-body">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="login" class="form-label">Логін</label>
+                        <input type="text" class="form-control" placeholder="будь-якою мовою, довжина не обмежена" id="login" name="login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control"placeholder="може містити будь-які символи" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName" class="form-label">ПІБ</label>
+                        <input type="text" class="form-control" placeholder="наприклад Іванов Ілля Юрійович" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rank" class="form-label">Звання</label>
+                        <select class="form-select" id="rank" name="rank" required>
+                            <option value="">Оберіть звання</option>
+                            <option value="Рекрут">Рекрут</option>
+                            <option value="Солдат">Солдат</option>
+                            <option value="Старший солдат">Старший солдат</option>
+                            <option value="Молодший сержант">Молодший сержант</option>
+                            <option value="Сержант">Сержант</option>
+                            <option value="Старший сержант">Старший сержант</option>
+                            <option value="Головний сержант">Головний сержант</option>
+                            <option value="Штаб-сержант">Штаб-сержант</option>
+                            <option value="Майстер-сержант">Майстер-сержант</option>
+                            <option value="Старший майстер-сержант">Старший майстер-сержант</option>
+                            <option value="Головний майстер-сержант">Головний майстер-сержант</option>
+                            <option value="Молодший лейтенант">Молодший лейтенант</option>
+                            <option value="Лейтенант">Лейтенант</option>
+                            <option value="Старший лейтенант">Старший лейтенант</option>
+                            <option value="Капітан">Капітан</option>
+                            <option value="Майор">Майор</option>
+                            <option value="Підполковник">Підполковник</option>
+                            <option value="Полковник">Полковник</option>
+                            <option value="Бригадний генерал">Бригадний генерал</option>
+                            <option value="Генерал-майор">Генерал-майор</option>
+                            <option value="Генерал-лейтенант">Генерал-лейтенант</option>
+                            <option value="Генерал">Генерал</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="position" class="form-label">Посада</label>
+                        <input type="text" class="form-control" placeholder="з маленької, напр. командир 304 навчальної групи" id="position" name="position" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Зареєструватися</button>
+                    </div>
+                </form>
+                <div class="text-center mt-4">
+                    <p>Вже маєте обліковий запис? <a href="/html/login.html">Увійти</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

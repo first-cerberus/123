@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'UAFSans-Regular';
+    src: url('/fonts/UAFSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Volja-Black';
+    src: url('/fonts/Volja-Black.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'UAFSans-Bold';
+    src: url('/fonts/UAFSans-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'UAFSans-Regular', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    background-image: url('/img/back.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.navbar {
+    background-color: #4D4634;
+    padding: 5px 0;
+    padding-bottom: 7px;
+    color: white;
+    display: flex;
+}
+.logo {
+    height: 85px;
+    width: auto;
+    margin-left: 175px;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 23px;
+    /* padding: 0 15px; */
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+.text-center {
+    text-align: center;
+}
+.card-body {
+    padding: 1rem;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
