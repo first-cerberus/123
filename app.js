@@ -1,10 +1,16 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { MongoClient } = require('mongodb');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 
 const app = express();
+
+// MongoDB Atlas connection string (замените на ваш URL-подключения из MongoDB Atlas)
+const mongoUri = 'mongodb+srv://sans15365:poiuyt123321@cluster0.roheqjh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const client = new MongoClient(mongoUri);
+
+let db;
 
 // Налаштування проміжного ПЗ
 app.use(express.json());
@@ -20,13 +26,23 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-// Підключення до MongoDB
-mongoose.connect('mongodb://localhost:27017/military_leave_db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Підключено до MongoDB'))
-.catch((err) => console.error('Помилка підключення до MongoDB:', err));
+// Підключення до MongoDB Atlas
+async function connectToDatabase() {
+    try {
+        await client.connect();
+        db = client.db('military_leave_db');
+        console.log('Підключено до MongoDB Atlas');
+        
+        // Add this line to make db available globally
+        app.locals.db = db;
+    } catch (err) {
+        console.error('Помилка підключення до MongoDB Atlas:', err);
+        process.exit(1);
+    }
+}
+
+// Connect to the database
+connectToDatabase();
 
 // Middleware для перевірки авторизації
 const authMiddleware = (req, res, next) => {
@@ -48,4 +64,10 @@ app.get('/', authMiddleware, (req, res) => {
 const PORT = 80;
 app.listen(PORT, () => {
     console.log(`Сервер запущено на порту ${PORT}`);
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    await client.close();
+    process.exit();
 });

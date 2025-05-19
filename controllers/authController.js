@@ -23,63 +23,71 @@ class AuthController {
     // Реєстрація нового користувача
     async register(req, res) {
         try {
-            const { login, password, fullName, rank, position } = req.body;
-            
-            const userExists = await User.findOne({ login });
-            if (userExists) {
-                return res.status(400).json({ message: 'Користувач з таким логіном вже існує' });
+            const { username, password, rank, fullName, position } = req.body;
+            const db = req.app.locals.db;
+
+            // Check if user already exists
+            const existingUser = await User.findOne({ username }, db);
+            if (existingUser) {
+                return res.status(400).json({ message: 'Користувач вже існує' });
             }
 
-            const user = new User({
-                login,
-                password,
-                fullName,
-                rank,
-                position,
-                isFirstUser: req.isFirstUser,
-                role: req.isFirstUser ? 'admin' : 'user'
-            });
+            // Create new user
+            const user = new User({ username, password, rank, fullName, position });
+            const result = await user.save(db);
 
-            await user.save();
-            res.status(200).json({ message: 'Користувач успішно зареєстрований' });
-        } catch (error) {
-            res.status(500).json({ message: 'Помилка при реєстрації', error: error.message });
+            res.status(201).json({ message: 'Користувач успішно зареєстрований', userId: result.insertedId });
+        } catch (err) {
+            console.error('Помилка реєстрації:', err);
+            res.status(500).json({ message: 'Помилка сервера при реєстрації' });
         }
     }
 
     // Вхід користувача
     async login(req, res) {
         try {
-            const { login, password } = req.body;
-            const user = await User.findOne({ login });
+            const { username, password } = req.body;
+            const db = req.app.locals.db;
 
-            if (!user || !(await user.comparePassword(password))) {
-                return res.status(401).json({ message: 'Невірний логін або пароль' });
+            // Find user
+            const user = await User.findOne({ username }, db);
+            if (!user) {
+                return res.status(401).json({ message: 'Неправильне імя користувача або пароль' });
             }
 
+            // Check password
+            const isValid = await User.comparePassword(password, user.password);
+            if (!isValid) {
+                return res.status(401).json({ message: 'Неправильне імя користувача або пароль' });
+            }
+
+            // Set session
             req.session.userId = user._id;
-            req.session.userRole = user.role;
-            
+            req.session.userRank = user.rank;
+            req.session.userFullName = user.fullName;
+
             res.json({ 
                 message: 'Успішний вхід',
                 user: {
                     id: user._id,
-                    login: user.login,
-                    fullName: user.fullName,
+                    username: user.username,
                     rank: user.rank,
-                    role: user.role
+                    fullName: user.fullName,
+                    position: user.position
                 }
             });
-        } catch (error) {
-            res.status(500).json({ message: 'Помилка при вході', error: error.message });
+        } catch (err) {
+            console.error('Помилка входу:', err);
+            res.status(500).json({ message: 'Помилка сервера при вході' });
         }
     }
 
     // Вихід користувача
     logout(req, res) {
-        req.session.destroy((err) => {
+        req.session.destroy(err => {
             if (err) {
-                return res.status(500).json({ message: 'Помилка при виході' });
+                console.error('Помилка виходу:', err);
+                return res.status(500).json({ message: 'Помилка сервера при виході' });
             }
             res.json({ message: 'Успішний вихід' });
         });

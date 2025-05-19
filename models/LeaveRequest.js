@@ -1,48 +1,28 @@
-const mongoose = require('mongoose');
-
-const leaveRequestSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    requestedById: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    departureDate: {
-        type: Date,
-        required: true
-    },
-    returnDate: {
-        type: Date,
-        required: true
-    },
-    reason: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending'
+class LeaveRequest {
+    constructor(data) {
+        this.userId = data.userId;
+        this.startDate = data.startDate;
+        this.endDate = data.endDate;
+        this.reason = data.reason;
+        this.status = data.status || 'pending';
+        this.createdAt = data.createdAt || new Date();
     }
-}, {
-    timestamps: true
-});
 
-// Валідація дат
-leaveRequestSchema.pre('save', function(next) {
-    if (this.departureDate >= this.returnDate) {
-        next(new Error('Дата повернення має бути пізніше дати відбуття'));
+    static async find(query, db) {
+        return await db.collection('leaveRequests').find(query).toArray();
     }
-    if (this.departureDate < new Date()) {
-        next(new Error('Дата відбуття не може бути в минулому'));
-    }
-    next();
-});
 
-const LeaveRequest = mongoose.model('LeaveRequest', leaveRequestSchema);
+    static async findById(id, db) {
+        return await db.collection('leaveRequests').findOne({ _id: id });
+    }
+
+    async save(db) {
+        return await db.collection('leaveRequests').insertOne(this);
+    }
+
+    static async updateOne(query, update, db) {
+        return await db.collection('leaveRequests').updateOne(query, { $set: update });
+    }
+}
 
 module.exports = LeaveRequest;

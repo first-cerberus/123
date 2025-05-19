@@ -1,56 +1,32 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
-    login: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    fullName: { type: String, required: true},
-    rank: { type: String, required: true,
-        enum: [
-            'Рекрут',
-            'Солдат',
-            'Старший солдат',
-            'Молодший сержант',
-            'Сержант',
-            'Старший сержант',
-            'Головний сержант',
-            'Штаб-сержант',
-            'Майстер-сержант',
-            'Старший майстер-сержант',
-            'Головний майстер-сержант',
-            'Молодший лейтенант',
-            'Лейтенант',
-            'Старший лейтенант',
-            'Капітан',
-            'Майор',
-            'Підполковник',
-            'Полковник',
-            'Бригадний генерал',
-            'Генерал-майор',
-            'Генерал-лейтенант',
-            'Генерал'
-        ]
-    },
-    position: { type: String, required: true },
-    role: { type: String, enum: ['admin', 'user'], default: 'user'},
-    isFirstUser: { type: Boolean, default: false }
-}, {
-    timestamps: true
-});
-
-// Хешування паролю перед збереженням
-userSchema.pre('save', async function(next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
+class User {
+    constructor(data) {
+        this.username = data.username;
+        this.password = data.password;
+        this.rank = data.rank;
+        this.fullName = data.fullName;
+        this.position = data.position;
     }
-    next();
-});
 
-// Метод для перевірки паролю
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.password);
-};
+    static async findOne(query, db) {
+        return await db.collection('users').findOne(query);
+    }
 
-const User = mongoose.model('User', userSchema);
+    static async findById(id, db) {
+        return await db.collection('users').findOne({ _id: id });
+    }
+
+    async save(db) {
+        if (this.password) {
+            this.password = await bcrypt.hash(this.password, 10);
+        }
+        return await db.collection('users').insertOne(this);
+    }
+
+    static async comparePassword(plainPassword, hashedPassword) {
+        return await bcrypt.compare(plainPassword, hashedPassword);
+    }
+}
 
 module.exports = User;

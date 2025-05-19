@@ -1,5 +1,5 @@
 const LeaveRequest = require('../models/LeaveRequest');
-const User = require('../models/User');
+const { ObjectId } = require('mongodb');
 
 class LeaveController {
     // Отримання всіх заявок
@@ -37,57 +37,43 @@ class LeaveController {
     // Створення нової заявки
     async createLeaveRequest(req, res) {
         try {
-            const { userId, departureDate, returnDate, reason } = req.body;
-            
+            const { startDate, endDate, reason } = req.body;
+            const userId = req.session.userId;
+            const db = req.app.locals.db;
+
             const leaveRequest = new LeaveRequest({
-                userId,
-                requestedById: req.session.userId,
-                departureDate,
-                returnDate,
+                userId: new ObjectId(userId),
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
                 reason,
                 status: 'pending'
             });
 
-            await leaveRequest.save();
-            res.status(201).json(leaveRequest);
-        } catch (error) {
-            res.status(500).json({ 
-                message: 'Помилка при створенні заявки',
-                error: error.message
-            });
+            const result = await leaveRequest.save(db);
+            res.status(201).json({ message: 'Заява створена успішно', leaveRequest: result.ops[0] });
+        } catch (err) {
+            console.error('Помилка створення заяви:', err);
+            res.status(500).json({ message: 'Помилка сервера при створенні заяви' });
         }
     }
 
     // Оновлення заявки
     async updateLeaveRequest(req, res) {
         try {
-            const { departureDate, returnDate, reason } = req.body;
-            const leaveRequest = await LeaveRequest.findById(req.params.id);
+            const { id } = req.params;
+            const { status } = req.body;
+            const db = req.app.locals.db;
 
-            if (!leaveRequest) {
-                return res.status(404).json({ message: 'Заявку не знайдено' });
-            }
+            await LeaveRequest.updateOne(
+                { _id: new ObjectId(id) },
+                { status },
+                db
+            );
 
-            // Перевірка прав на редагування
-            const currentUser = await User.findById(req.session.userId);
-            if (currentUser.role !== 'admin' && 
-                leaveRequest.status !== 'pending' &&
-                leaveRequest.requestedById.toString() !== req.session.userId &&
-                leaveRequest.userId.toString() !== req.session.userId) {
-                return res.status(403).json({ message: 'Недостатньо прав для редагування заявки' });
-            }
-
-            leaveRequest.departureDate = departureDate;
-            leaveRequest.returnDate = returnDate;
-            leaveRequest.reason = reason;
-
-            await leaveRequest.save();
-            res.json(leaveRequest);
-        } catch (error) {
-            res.status(500).json({ 
-                message: 'Помилка при оновленні заявки',
-                error: error.message
-            });
+            res.json({ message: 'Статус заяви оновлено успішно' });
+        } catch (err) {
+            console.error('Помилка оновлення заяви:', err);
+            res.status(500).json({ message: 'Помилка сервера при оновленні заяви' });
         }
     }
 

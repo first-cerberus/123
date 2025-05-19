@@ -103,7 +103,6 @@
     "mkdirp": "^1.0.4",
     "mongodb": "^5.9.2",
     "mongodb-connection-string-url": "^2.6.0",
-    "mongoose": "^7.8.6",
     "mpath": "^0.9.0",
     "mquery": "^5.0.0",
     "ms": "^2.0.0",
@@ -189,6 +188,5 @@
     "url": "https://github.com/first-cerberus/-coursework/issues"
   },
   "homepage": "https://github.com/first-cerberus/-coursework#readme",
-  "devDependencies": {},
   "description": ""
 }
